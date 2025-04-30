@@ -18,7 +18,11 @@ def infer(
     # First step - Convert dataset from BraTS2023 to nnUNet format
     print("Doing first step")
     input_folder_nnunet = 'converted_dataset/'
-    convert_data_step(input_folder_nnunet=input_folder_nnunet, raw_dataset=data_path)
+    if output_path is None:
+        print('not converting the raw data - using the contents of {}'.format(input_folder_nnunet))
+    else:
+        print('converting the raw data from {}'.format(data_path))
+        convert_data_step(input_folder_nnunet=input_folder_nnunet, raw_dataset=data_path)
     print(f"Number of files in input_folder_nnunet: {len(listdir(input_folder_nnunet))}")
 
     # Second step - Performing inference for each model
@@ -62,9 +66,9 @@ def infer(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Segmentation inference")
-    parser.add_argument("--data_path", type=str, help="Path with the raw cases, following the BraTS 2023 Glioma challenge")
-    parser.add_argument("--output_path", type=str, help="Path to save the predictions")
-    parser.add_argument("--nnUNet_results", type=str, help="Path to the results of the nnUNet training")
+    parser.add_argument("--data_path", type=str, default=None, required=False, help="Path with the raw cases, following the BraTS 2023 Glioma challenge")
+    parser.add_argument("--output_path", type=str, required=True, help="Path to save the predictions")
+    parser.add_argument("--nnUNet_results", type=str, required=True, help="Path to the results of the nnUNet training")
     args = parser.parse_args()
     infer(data_path=args.data_path,output_path=args.output_path, nnUNet_results=args.nnUNet_results)
         
